@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>College Portal</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f2f2f2;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+    }
+
+    header {
+      background: #004aad;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .login-box, .dashboard {
+      padding: 20px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 12px;
+      width: 100%;
+      border: none;
+      background: #004aad;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #00337a;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      background: #eee;
+    }
+
+    .tabs button {
+      flex: 1;
+      border-radius: 0;
+      background: #ddd;
+      color: black;
+      font-weight: bold;
+    }
+
+    .tabs button.active {
+      background: #004aad;
+      color: white;
+    }
+
+    .tab-content {
+      padding: 20px;
+    }
+
+    .card {
+      background: #f9f9f9;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border-left: 6px solid #004aad;
+    }
+
+    .logout {
+      background: red;
+    }
+
+    .logout:hover {
+      background: darkred;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: #004aad;
+      color: white;
+    }
+
+    .notice-box {
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 6px solid orange;
+      margin: 10px 0;
+    }
+
+    .admin-panel {
+      background: #e8f5e9;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 6px solid green;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <header>
+      <h1>🎓 College Portal</h1>
+      <p>Student & Admin Dashboard</p>
+    </header>
+
+    <!-- LOGIN SECTION -->
+    <div class="login-box" id="loginBox">
+      <h2>Login</h2>
+
+      <label>Select Role</label>
+      <select id="role">
+        <option value="student">Student</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <input type="text" id="username" placeholder="Enter Username" required />
+      <input type="password" id="password" placeholder="Enter Password" required />
+
+      <button onclick="login()">Login</button>
+
+      <p style="margin-top:10px; color:gray;">
+        Student Login: <b>student</b> / <b>1234</b> <br>
+        Admin Login: <b>admin</b> / <b>admin123</b>
+      </p>
+    </div>
+
+    <!-- DASHBOARD SECTION -->
+    <div class="dashboard hidden" id="dashboard">
+
+      <div class="tabs">
+        <button class="tabBtn active" onclick="openTab('profile')">Profile</button>
+        <button class="tabBtn" onclick="openTab('attendance')">Attendance</button>
+        <button class="tabBtn" onclick="openTab('marks')">Marks</button>
+        <button class="tabBtn" onclick="openTab('notices')">Notices</button>
+        <button class="tabBtn logout" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="tab-content">
+
+        <!-- PROFILE -->
+        <div id="profile" class="tabSection">
+          <h2>👤 Student Profile</h2>
+          <div class="card">
+            <p><b>Name:</b> <span id="studentName"></span></p>
+            <p><b>Department:</b> <span id="studentDept"></span></p>
+            <p><b>Year:</b> <span id="studentYear"></span></p>
+            <p><b>Roll No:</b> <span id="studentRoll"></span></p>
+          </div>
+        </div>
+
+        <!-- ATTENDANCE -->
+        <div id="attendance" class="tabSection hidden">
+          <h2>📅 Attendance</h2>
+          <div class="card">
+            <p><b>Total Days:</b> 100</p>
+            <p><b>Present:</b> <span id="presentDays"></span></p>
+            <p><b>Absent:</b> <span id="absentDays"></span></p>
+            <p><b>Percentage:</b> <span id="attendancePercent"></span>%</p>
+          </div>
+        </div>
+
+        <!-- MARKS -->
+        <div id="marks" class="tabSection hidden">
+          <h2>📊 Marks</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Marks</th>
+              </tr>
+            </thead>
+            <tbody id="marksTable"></tbody>
+          </table>
+
+          <div id="adminMarksPanel" class="admin-panel hidden">
+            <h3>🛠 Admin: Update Marks</h3>
+            <input type="text" id="subName" placeholder="Subject Name">
+            <input type="number" id="subMarks" placeholder="Marks (0-100)">
+            <button onclick="updateMarks()">Update Marks</button>
+          </div>
+        </div>
+
+        <!-- NOTICES -->
+        <div id="notices" class="tabSection hidden">
+          <h2>📢 Notices</h2>
+
+          <div id="noticeList"></div>
+
+          <div id="adminNoticePanel" class="admin-panel hidden">
+            <h3>🛠 Admin: Add Notice</h3>
+            <input type="text" id="noticeTitle" placeholder="Notice Title">
+            <input type="text" id="noticeDesc" placeholder="Notice Description">
+            <button onclick="addNotice()">Add Notice</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Default student data
+    const studentData = {
+      name: "Tharmika V",
+      dept: "ECE",
+      year: "2nd Year",
+      roll: "ECE2025",
+      present: 85,
+      marks: [
+        { subject: "Digital Electronics", mark: 78 },
+        { subject: "Signals & Systems", mark: 85 },
+        { subject: "Microprocessor", mark: 88 },
+        { subject: "Communication Systems", mark: 80 }
+      ]
+    };
+
+    // Default notices
+    const defaultNotices = [
+      { title: "Exam Notification", desc: "Internal exams start from next Monday." },
+      { title: "Workshop", desc: "IoT Workshop will be held this Friday at Seminar Hall." }
+    ];
+
+    // Store data if not already stored
+    if (!localStorage.getItem("marks")) {
+      localStorage.setItem("marks", JSON.stringify(studentData.marks));
+    }
+
+    if (!localStorage.getItem("notices")) {
+      localStorage.setItem("notices", JSON.stringify(defaultNotices));
+    }
+
+    let currentRole = "";
+
+    function login() {
+      const role = document.getElementById("role").value;
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      if (role === "student" && username === "student" && password === "1234") {
+        currentRole = "student";
+        showDashboard();
+      } 
+      else if (role === "admin" && username === "admin" && password === "admin123") {
+        currentRole = "admin";
+        showDashboard();
+      } 
+      else {
+        alert("Invalid Login Credentials!");
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("dashboard").classList.remove("hidden");
+
+      // Load profile data
+      document.getElementById("studentName").innerText = studentData.name;
+      document.getElementById("studentDept").innerText = studentData.dept;
+      document.getElementById("studentYear").innerText = studentData.year;
+      document.getElementById("studentRoll").innerText = studentData.roll;
+
+      // Attendance calculation
+      document.getElementById("presentDays").innerText = studentData.present;
+      document.getElementById("absentDays").innerText = 100 - studentData.present;
+      document.getElementById("attendancePercent").innerText = studentData.present;
+
+      loadMarks();
+      loadNotices();
+
+      // Show admin panels only if admin
+      if (currentRole === "admin") {
+        document.getElementById("adminNoticePanel").classList.remove("hidden");
+        document.getElementById("adminMarksPanel").classList.remove("hidden");
+      } else {
+        document.getElementById("adminNoticePanel").classList.add("hidden");
+        document.getElementById("adminMarksPanel").classList.add("hidden");
+      }
+    }
+
+    function logout() {
+      document.getElementById("loginBox").classList.remove("hidden");
+      document.getElementById("dashboard").classList.add("hidden");
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      currentRole = "";
+    }
+
+    function openTab(tabId) {
+      document.querySelectorAll(".tabSection").forEach(tab => {
+        tab.classList.add("hidden");
+      });
+
+      document.getElementById(tabId).classList.remove("hidden");
+
+      document.querySelectorAll(".tabBtn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      event.target.classList.add("active");
+    }
+
+    function loadMarks() {
+      const marks = JSON.parse(localStorage.getItem("marks"));
+      const table = document.getElementById("marksTable");
+      table.innerHTML = "";
+
+      marks.forEach(m => {
+        table.innerHTML += `
+          <tr>
+            <td>${m.subject}</td>
+            <td>${m.mark}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function updateMarks() {
+      const subName = document.getElementById("subName").value.trim();
+      const subMarks = document.getElementById("subMarks").value.trim();
+
+      if (subName === "" || subMarks === "") {
+        alert("Please enter subject and marks!");
+        return;
+      }
+
+      let marks = JSON.parse(localStorage.getItem("marks"));
+
+      // Update if subject exists
+      let found = false;
+      marks = marks.map(m => {
+        if (m.subject.toLowerCase() === subName.toLowerCase()) {
+          found = true;
+          return { subject: subName, mark: parseInt(subMarks) };
+        }
+        return m;
+      });
+
+      // If not found, add new subject
+      if (!found) {
+        marks.push({ subject: subName, mark: parseInt(subMarks) });
+      }
+
+      localStorage.setItem("marks", JSON.stringify(marks));
+
+      document.getElementById("subName").value = "";
+      document.getElementById("subMarks").value = "";
+
+      loadMarks();
+      alert("Marks Updated Successfully!");
+    }
+
+    function loadNotices() {
+      const notices = JSON.parse(localStorage.getItem("notices"));
+      const noticeList = document.getElementById("noticeList");
+      noticeList.innerHTML = "";
+
+      notices.forEach(n => {
+        noticeList.innerHTML += `
+          <div class="notice-box">
+            <h3>${n.title}</h3>
+            <p>${n.desc}</p>
+          </div>
+        `;
+      });
+    }
+
+    function addNotice() {
+      const title = document.getElementById("noticeTitle").value.trim();
+      const desc = document.getElementById("noticeDesc").value.trim();
+
+      if (title === "" || desc === "") {
+        alert("Please enter notice title and description!");
+        return;
+      }
+
+      let notices = JSON.parse(localStorage.getItem("notices"));
+      notices.unshift({ title, desc });
+
+      localStorage.setItem("notices", JSON.stringify(notices));
+
+      document.getElementById("noticeTitle").value = "";
+      document.getElementById("noticeDesc").value = "";
+
+      loadNotices();
+      alert("Notice Added Successfully!");
+    }
+  </script>
+
+</body>
+</html>
